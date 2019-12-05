@@ -9,6 +9,7 @@ driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr
 window = driver.current_window_handle
 time.sleep(3)
 driver.find_element_by_xpath('//*[@id="outlookdivin0"]/span[2]/table/tbody/tr/td/a').click()
+driver.find_elements_by_xpath()
 # login_name = driver.find_element_by_xpath('/html/body/table/tbody/tr/td[2]/table/tbody/tr/td[1]/span[2]').text
 # login_name = login_name.strip('欢迎：')
 # print(login_name)
