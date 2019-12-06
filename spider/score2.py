@@ -14,9 +14,8 @@ sheet.cell(row=1, column=1, value='学科')
 sheet.cell(row=1, column=2, value='成绩')
 del results[0]
 j = 0
-b= 2
+b = 2
 for i in results:
-
     p = re.compile('<td>(.*?)</td>', re.S)
     w = re.findall(p, i)
     # if w[2] == '任选':
@@ -27,9 +26,9 @@ for i in results:
     # print(a)
     j = j + a
     # print('j:%s' % j)
-    sheet.cell(row=b,column=1,value=w[1])
+    sheet.cell(row=b, column=1, value=w[1])
     sheet.cell(row=b, column=2, value=w[4])
-    b+=1
+    b += 1
 
 wb.save('test.xlsx')
 # print(j)

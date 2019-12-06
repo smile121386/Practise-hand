@@ -10,17 +10,14 @@ ws = wb.active
 ws.title = 'aa'
 print(wb.sheetnames)
 
-
-
 del results[0]
 j = 1
 for i in results:
-
     p = re.compile('<td>(.*?)</td>', re.S)
     w = re.findall(p, i)
     # print('学科：%s，成绩：%s' % (w[1], w[4]))
-    c = ws.cell(row=1,column=j,value=w[1])
-    d = ws.cell(row=2,column=j,value=w[4])
+    c = ws.cell(row=1, column=j, value=w[1])
+    d = ws.cell(row=2, column=j, value=w[4])
     j += 1
 
 wb.save('b.xlsx')
