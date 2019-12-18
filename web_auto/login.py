@@ -121,7 +121,7 @@ def add_approver(driver, user_list):
         driver.find_element_by_xpath('/html/body/div[16]/div[2]/div[3]/a/span/span').click()
         time.sleep(1)
         driver.find_element_by_xpath('//*[@id="setApprovalUser_range_groupListDialog"]/div[2]/a/span/span').click()
-        
+
 
 
 def all_test():
