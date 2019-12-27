@@ -1,6 +1,3 @@
-from datetime import datetime
-
-for i in range(1,5):
-    print(i)
-
-
+a = 'cs1.local'
+b = a.split('.')
+print(b[0])
