@@ -338,10 +338,10 @@ def all_test():
     driver.maximize_window()
     login(driver, read_test_data('login_data')[-1][0], read_test_data('login_data')[-1][1], read_test_data('login_data')[-1][2])
     organization_list = ['审批组1', '审批组2', '审批组3']
-    clear_test_sheet('approver_list')
-    for i in organization_list:
-        create_organization(driver, i)
-        create_user(driver, i)
+    # clear_test_sheet('approver_list')
+    # for i in organization_list:
+    #     create_organization(driver, i)
+    #     create_user(driver, i)
     add_approver(driver)
 
 
