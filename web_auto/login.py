@@ -4,12 +4,28 @@ from read_write_excel import *
 from datetime import datetime
 
 
-def login(driver, url, username, password):
+def launch_chrome(url):
+    driver = webdriver.Chrome()
+    driver.maximize_window()
     driver.get(url)
+    driver.implicitly_wait(10)
+    return driver
+
+
+def user_login(driver, username, password):
+    try:
+        driver.find_element_by_xpath('//*[@id="details-button"]').click()
+        time.sleep(2)
+        driver.find_element_by_xpath('//*[@id="proceed-link"]').click()
+        time.sleep(2)
+    except:
+        pass
     driver.find_element_by_xpath('//*[@id="login_img"]').click()
     time.sleep(2)
-    driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[3]/td[3]/input').send_keys(username)
-    driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[5]/td[3]/input').send_keys(password)
+    driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[3]/td[3]/input').send_keys(
+        username)
+    driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[5]/td[3]/input').send_keys(
+        password)
     driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[7]/td[3]/a[1]/img').click()
     time.sleep(2)
 
@@ -24,6 +40,18 @@ def entry_organization_and_management(driver):
     driver.switch_to.default_content()
     oa_main = driver.find_element_by_xpath('//*[@id="oa_main"]')
     driver.switch_to.frame(oa_main)
+
+
+def entry_organization_search_user(driver, search_username):
+    user_list_frame = driver.find_element_by_xpath('//*[@id="frmUserList"]')
+    driver.switch_to.frame(user_list_frame)
+    time.sleep(1)
+    username_search_textbox = driver.find_element_by_xpath('//*[@id="userId"]')
+    username_search_textbox.send_keys(search_username)
+    time.sleep(2)
+    username_query_btn = driver.find_element_by_xpath('//*[@id="search"]')
+    username_query_btn.click()
+    time.sleep(2)
 
 
 def return_homepage(driver):
@@ -49,8 +77,9 @@ def create_organization(driver, organization_name):
     return_homepage(driver)
 
 
-def create_user(driver, organization_name):
+def create_user(driver, organization_name, stage):
     entry_organization_and_management(driver)
+    a = read_excel_data('test_data.xlsx', 'approver_list', row_number=stage)
     driver.find_element_by_xpath('//*[@id="0_switch"]').click()
     time.sleep(2)
     list_organization = driver.find_element_by_xpath('//*[@id="0_ul"]')
@@ -66,25 +95,23 @@ def create_user(driver, organization_name):
     driver.switch_to.frame(user_list_frame)
     user_list = []
     time.sleep(2)
-    for i in range(3):
+    for i in a:
         driver.find_element_by_xpath('//*[@id="tbUserList"]/thead[2]/tr/td/input[3]').click()
         time.sleep(2)
-        now_time = datetime.now()
-        now_time_str = now_time.strftime('%m%d%H%M%S')
-        add_user = 'cs%s' % now_time_str
-        driver.find_element_by_xpath('//*[@id="userName"]').send_keys(add_user)
-        driver.find_element_by_xpath('//*[@id="surName"]').send_keys(add_user)
+        driver.find_element_by_xpath('//*[@id="userName"]').send_keys(i)
+        driver.find_element_by_xpath('//*[@id="surName"]').send_keys(i)
         driver.find_element_by_xpath('//*[@id="btnSave"]').click()
         time.sleep(2)
-        user_list.append('{user}.local'.format(user=add_user))
-    write_approver_data(user_list)
-    user_list = []
+        user_list.append('{user}.local'.format(user=i))
     return_homepage(driver)
-    # return user_list
 
 
 def add_approver(driver):
-    user_list = read_test_data('approver_list')
+    user_list = []
+    a = read_excel_data('test_data.xlsx', 'approver_list')
+    for i in range(0, len(a), 3):
+        b = a[i:i + 3]
+        user_list.append(b)
     for i in range(2, 10):
         oa_left_middle = driver.find_element_by_xpath('//*[@id="oa_left_middle"]')
         driver.switch_to.frame(oa_left_middle)
@@ -104,7 +131,8 @@ def add_approver(driver):
                 break
             else:
                 parent_td = driver.find_element_by_xpath('/html/body/form/table/tbody/tr[7]/td[2]')
-                delete_approver = parent_td.find_elements_by_tag_name('table')[-1].find_elements_by_tag_name('input')[-1]
+                delete_approver = parent_td.find_elements_by_tag_name('table')[-1].find_elements_by_tag_name('input')[
+                    -1]
                 delete_approver.click()
                 time.sleep(2)
                 driver.switch_to.alert.accept()
@@ -144,7 +172,10 @@ def add_approver(driver):
             else:
                 for tr in tr_list:
                     tds_list = tr.find_elements_by_tag_name('td')
-                    if tds_list[2].text not in user_list[0]:
+                    t = tds_list[2].text
+                    tt = t.split('.')
+                    ttt = '.'.join(tt[0:-1])
+                    if ttt not in user_list[0]:
                         tds_list[-1].find_elements_by_tag_name('a')[0].click()
                         time.sleep(2)
                         driver.switch_to.alert.accept()
@@ -153,7 +184,7 @@ def add_approver(driver):
         tbody = driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody')
         trs_list = tbody.find_elements_by_tag_name('tr')
         tr_list = trs_list[:-2]
-        for i in range(1, len(tr_list)+1):
+        for i in range(1, len(tr_list) + 1):
             driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody/tr[%s]/td[5]/a[2]' % i).click()
             time.sleep(2)
             driver.find_element_by_xpath('//*[@id="selectGroupList"]/ul/li/div/span[1]').click()
@@ -213,7 +244,7 @@ def add_approver(driver):
         time.sleep(2)
         approver_tbody = driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody')
         approver_tr_list = approver_tbody.find_elements_by_tag_name('tr')[:-2]
-        for q in range(1, len(approver_tr_list)+1):
+        for q in range(1, len(approver_tr_list) + 1):
             driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody/tr[%s]/td[5]/a[2]' % q).click()
             time.sleep(2)
             driver.find_element_by_xpath('//*[@id="selectGroupList"]/ul/li/div/span[1]').click()
@@ -280,7 +311,7 @@ def add_approver(driver):
         time.sleep(2)
         approver_tbody = driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody')
         approver_tr_list = approver_tbody.find_elements_by_tag_name('tr')[:-2]
-        for q in range(1, len(approver_tr_list)+1):
+        for q in range(1, len(approver_tr_list) + 1):
             driver.find_element_by_xpath('//*[@id="myForm"]/table[2]/tbody/tr[%s]/td[5]/a[2]' % q).click()
             time.sleep(2)
             driver.find_element_by_xpath('//*[@id="selectGroupList"]/ul/li/div/span[1]').click()
@@ -331,20 +362,34 @@ def add_approver(driver):
         return_homepage(driver)
 
 
+def create_and_add_approver(driver):
+    a = 1
+    organization_list = ['审批组1', '审批组2', '审批组3']
+    test_user = read_excel_data('test_data.xlsx', 'approver_list', 1, 1)
+    entry_organization_and_management(driver)
+    entry_organization_search_user(driver, test_user)
+    username_tbody = driver.find_element_by_xpath('//*[@id="tbUserList"]/tbody')
+    username_trs_list = username_tbody.find_elements_by_tag_name('tr')
+    if len(username_trs_list) > 1:
+        return_homepage(driver)
+    else:
+        return_homepage(driver)
+        time.sleep(2)
+        for i in organization_list:
+            create_organization(driver, i)
+            create_user(driver, i, a)
+            a += 1
+        add_approver(driver)
 
 
 def all_test():
-    driver = webdriver.Chrome()
-    driver.maximize_window()
-    login(driver, read_test_data('login_data')[-1][0], read_test_data('login_data')[-1][1], read_test_data('login_data')[-1][2])
-    organization_list = ['审批组1', '审批组2', '审批组3']
-    # clear_test_sheet('approver_list')
-    # for i in organization_list:
-    #     create_organization(driver, i)
-    #     create_user(driver, i)
-    add_approver(driver)
+    login_url = read_excel_data('test_data.xlsx', 'login_data', 2, 1)
+    driver = launch_chrome(login_url)
+    login_name = read_excel_data('test_data.xlsx', 'login_data', 2, 2)
+    login_pw = read_excel_data('test_data.xlsx', 'login_data', 2, 3)
+    user_login(driver, login_name, login_pw)
+    create_and_add_approver(driver)
 
 
 if __name__ == '__main__':
     all_test()
-

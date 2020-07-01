@@ -1,11 +1,5 @@
-from datetime import datetime
+import read_write_excel
 
-# now_time = datetime.now()
-# print(now_time)
-# now_time_str = now_time.strftime('%Y%m%d%H%M%S')
-# print(now_time_str)
 
-if 'asdf' in 'asdfqwe':
-    print('true')
-else:
-    print('false')
+url = read_write_excel.read_excel_data('test_data.xlsx', 'login_data', 2, 1)
+print(url)

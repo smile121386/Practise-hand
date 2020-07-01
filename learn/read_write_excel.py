@@ -65,4 +65,3 @@ def write_excel(excel_name, sheet_name, row_number, col_number, write_value):
     wb.save(excel_name)
 
 
-write_excel('a.xlsx', 'a', '1', '2', '3')

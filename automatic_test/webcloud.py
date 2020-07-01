@@ -16,7 +16,7 @@ class login_test(unittest.TestCase):
     def test_login(self):
         self.username = "SystemAdmin"
         self.passwd = "Est@2018"
-        login.login(self)
+        login.user_login(self)
 
     def test_logout(self):
         logout.logout(self)

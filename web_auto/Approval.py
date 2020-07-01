@@ -43,7 +43,7 @@ def approval_all_flow(url):
     driver.get(url)
     driver.maximize_window()
     time.sleep(2)
-    for user_list in read_test_data('approver_list'):
+    for user_list in read_excel_data('test_data.xlsx', 'approver_list'):
         for user in user_list:
             username = '%s.local' % user
             password = read_test_data('login_data')[-1][2]

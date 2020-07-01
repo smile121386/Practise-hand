@@ -3,7 +3,7 @@ from datetime import datetime
 from selenium.webdriver.support.ui import Select
 
 
-def make_permission_template(driver):
+def make_permission_template(driver, confidentiality):
     oa_main_top_frame = driver.find_element_by_xpath('//*[@id="oa_main_top"]')
     driver.switch_to.frame(oa_main_top_frame)
     login_username_text = driver.find_element_by_xpath('/html/body/table/tbody/tr/td[2]/table/tbody/tr/td[1]/span[2]').text
@@ -34,7 +34,7 @@ def make_permission_template(driver):
         permission_template_name.send_keys(fill_template_name)
         sleep(2)
     confidentiality_level = driver.find_element_by_xpath('//*[@id="secrelevel"]')
-    Select(confidentiality_level).select_by_visible_text('核心商密(Core business secret)')
+    Select(confidentiality_level).select_by_visible_text(confidentiality)
     sleep(2)
     permission_template_describe = driver.find_element_by_xpath('//*[@id="description"]')
     permission_template_describe.send_keys('请问123QWas')

@@ -1,29 +1,31 @@
-from selenium import webdriver
+import shutil
+import os
 
 
-# a = {'1': 'admin', '2': 'abc'}
-# a={'1', '2', '3'}
-class LoginTest:
-    def login_test(self,username, password):
-        return username, password
-        print(username, password)
-        driver = webdriver.Chrome()
-        driver.implicitly_wait(10)
-        driver.get('https://192.168.1.140:8443/CDGServer3/index.jsp')
-        driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[3]/td[3]/input').send_keys(username)
-        driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[5]/td[3]/input').send_keys(password)
-        driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[7]/td[3]/a[1]/img').click()
-        driver.switch_to.alert.accept()
-        # driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[3]/td[3]/input').clear()
-        # driver.find_element_by_xpath('//*[@id="myForm"]/table/tbody/tr/td/table/tbody/tr[5]/td[3]/input').clear()
+def get_all_path(open_file_path):
+    rootdir = open_file_path
+    path_list = []
+    list1 = os.listdir(rootdir)  # 列出文件夹下所有的目录与文件
+    for i in range(0, len(list1)):
+        com_path = os.path.join(rootdir, list1[i])
+        # print(com_path)
+        if os.path.isfile(com_path):
+            path_list.append(com_path)
+        if os.path.isdir(com_path):
+            path_list.extend(get_all_path(com_path))
+    # print(path_list)
+    return path_list
 
 
-my_login = LoginTest()
-my_login.login_test(123456, 12345678)
-# for k, v in a.items():
-#     print(k, v)
-# my_login = LoginTest()
-# print(my_login.login_test(123, 12345678))
-# print(LoginTest.login_test(123, 12345678, 12345678))
-# my_login = LoginTest()
-# print(my_login.login_test(123, 12345678))
+def movefile(file_path_list, to_path):
+    if os.path.exists(to_path):
+        for i in file_path_list:
+            shutil.copy(i, to_path)
+    else:
+        os.mkdir(to_path)
+        for i in file_path_list:
+            shutil.copy(i, to_path)
+
+
+file_list = get_all_path(r'D:\q')
+movefile(file_list, r'D:\qq')
